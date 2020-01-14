@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vms.dao.UserMapper">
+    <sql id="simpleUserColumns">
+        ${alias}id,${alias}user_name,${alias}nick_name,${alias}phone,${alias}avatar,${alias}thumb_avatar,${alias}gender,${alias}email,${alias}birthday
+    </sql>
+
+    <select id="findAllUser" resultType="com.vms.bean.User">
+        select * from user
+    </select>
+
+    <select id="findAllUserByWhere" parameterType="HashMap" resultType="com.vms.bean.User">
+        select <include refid="simpleUserColumns"></include> from user
+        <where>
+            <if test="id != null">
+                id=#{id}
+            </if>
+            <if test="user_name != null">
+                user_name like concat('%',#{user_name},'%')
+            </if>
+            <if test="nick_name != null">
+                nick_name like concat('%',#{nick_name},'%')
+            </if>
+            <if test="email != null">
+                email like concat('%',#{email},'%')
+            </if>
+            <if test="gender != null">
+                gender=#{gender}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllAndRole" parameterType="Integer" resultType="com.vms.bean.User">
+        SELECT <include refid="simpleUserColumns"></include> FROM user
+    </select>
+
+    <select id="findByRoleId" parameterType="Integer" resultType="com.vms.bean.User">
+        SELECT <include refid="simpleUserColumns"><property name="alias" value="u."/></include> FROM
+        user_role ur
+        LEFT JOIN user u ON u.id=ur.user_id
+        WHERE ur.role_id=#{role_id}
+    </select>
+
+    <select id="findByUserName" parameterType="String" resultType="com.vms.bean.User">
+        select * from user where user_name=#{userName}
+    </select>
+
+    <select id="findSimpleByUserName" parameterType="String" resultType="com.vms.bean.User">
+        select <include refid="simpleUserColumns"></include> from user where user_name=#{userName}
+    </select>
+
+    <insert id="insertUser" parameterType="com.vms.bean.User" useGeneratedKeys="true"
+            keyProperty="id" keyColumn="id">
+        INSERT INTO user VALUES
+        (null,#{userName},#{nickName},#{password},#{phone},#{avatar},#{thumbAvatar},#{email},#{gender},#{birthday})
+    </insert>
+
+    <delete id="delUserById" parameterType="Integer">
+        delete from user where id=#{id}
+    </delete>
+</mapper>

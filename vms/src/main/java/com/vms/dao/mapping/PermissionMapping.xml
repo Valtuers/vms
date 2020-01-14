@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vms.dao.PermissionMapper">
+
+    <select id="findAll" resultType="com.vms.bean.Permission">
+        SELECT * FROM permission ORDER BY sort
+    </select>
+
+    <select id="findAllWhereUrl" resultType="com.vms.bean.Permission">
+        SELECT * FROM permission WHERE url like concat('%',#{url},'%') ORDER BY sort
+    </select>
+
+    <select id="findAllAndRole" resultType="com.vms.bean.Permission" resultMap="permissionAndRole">
+        SELECT * FROM permission ORDER BY sort
+    </select>
+    <resultMap id="permissionAndRole" type="com.vms.bean.Permission">
+        <id property="id" column="id"/>
+        <result property="url" column="url"/>
+        <result property="sort" column="sort"/>
+        <collection property="roleList" column="id" javaType="ArrayList"
+                    ofType="com.vms.bean.Role"
+                    select="com.vms.dao.RoleMapper.findByPermissionId">
+            <id property="id" column="id"/>
+            <result property="name" column="name"/>
+            <result property="remark" column="remark"/>
+        </collection>
+    </resultMap>
+
+    <select id="findByRoleId" resultType="com.vms.bean.Permission">
+        SELECT p.* FROM role_permission rp LEFT JOIN permission p ON rp.permission_id=p.id
+        where role_id=#{role_id} ORDER BY sort
+    </select>
+
+    <select id="findByUserName" parameterType="String" resultType="com.vms.bean.Permission">
+        SELECT p.* FROM user u
+        LEFT JOIN user_role ur ON ur.user_id=u.id
+        LEFT JOIN role r ON r.id=ur.role_id
+        LEFT JOIN role_permission rp ON rp.role_id=r.id
+        LEFT JOIN permission p ON p.id=rp.permission_id
+        WHERE u.user_name=#{user_name} ORDER BY sort
+    </select>
+
+    <insert id="addPermission" parameterType="com.vms.bean.Permission">
+        INSERT INTO permission VALUES(null,#{url},#{sort})
+    </insert>
+
+    <update id="updatePermission">
+        UPDATE permission set url=#{url},sort=#{sort} where id=#{id}
+    </update>
+
+    <delete id="deletePermission" parameterType="Integer">
+        DELETE FROM permission where id=#{id}
+    </delete>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vms.dao.MenuMapper">
+
+    <select id="getAllMenu" resultType="com.vms.bean.Menu">
+        select * from menu order by sort
+    </select>
+
+    <select id="findByRoleId" parameterType="Integer" resultType="com.vms.bean.Menu">
+        SELECT m.* FROM role_menu rm LEFT JOIN menu m ON rm.menu_id=m.id where rm.role_id=#{role_id} ORDER BY sort
+    </select>
+
+    <select id="findByUserName" parameterType="String" resultType="com.vms.bean.Menu">
+        SELECT m.* FROM user u
+            LEFT JOIN user_role ur ON ur.user_id=u.id
+            LEFT JOIN role_menu rm ON rm.role_id=ur.role_id
+            LEFT JOIN menu m ON m.id=rm.menu_id
+            WHERE u.user_name=#{userName} GROUP BY id ORDER BY sort
+    </select>
+
+    <insert id="insertByPid" parameterType="com.vms.bean.Menu">
+        insert into menu values(null,#{pid},#{name},#{label},#{path},#{url},#{icon},#{sort})
+    </insert>
+
+    <update id="updateById" parameterType="com.vms.bean.Menu">
+        update menu set pid=#{pid},name=#{name},label=#{label},path=#{path},url=#{url},sort=#{sort}
+        where id=#{id}
+    </update>
+
+    <update id="updateSortById" parameterType="com.vms.bean.Menu">
+        update menu set pid=#{pid},sort=#{sort}
+        where id=#{id}
+    </update>
+
+    <delete id="deleteById" parameterType="Integer">
+        delete from menu where id = #{id}
+    </delete>
+</mapper>

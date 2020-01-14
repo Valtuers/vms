@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vms.dao.RoleMapper">
+
+    <select id="findAll" parameterType="role" resultType="role">
+        SELECT * FROM role WHERE name like concat('%',#{name},'%')
+    </select>
+
+    <select id="findAllAndUser" parameterType="role" resultMap="roleAndUser">
+        SELECT * FROM role WHERE name like concat('%',#{name},'%')
+    </select>
+    <resultMap id="roleAndUser" type="role">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <collection property="userList" column="id" javaType="ArrayList"
+                    ofType="com.vms.bean.User"
+                    select="com.vms.dao.UserMapper.findByRoleId">
+            <id property="id" column="id"/>
+        </collection>
+        <collection property="permissionList" column="id" javaType="ArrayList"
+                    ofType="com.vms.bean.Permission"
+                    select="com.vms.dao.PermissionMapper.findByRoleId">
+            <id property="id" column="id"/>
+            <result property="name" column="name"/>
+        </collection>
+    </resultMap>
+
+    <select id="findByUserId" resultType="role">
+        SELECT ur.role_id id,r.name name,r.remark remark FROM user_role ur LEFT JOIN role r ON r.id=ur.role_id
+        WHERE ur.user_id=#{user_id} AND r.name like CONCAT('%',#{name},'%')
+    </select>
+
+    <select id="findByPermissionId" resultType="role">
+        SELECT r.id,r.name name,r.remark remark FROM role_permission rp LEFT JOIN role r
+         ON r.id=rp.role_id
+        WHERE rp.permission_id=#{permission_id}
+    </select>
+
+    <select id="findPermissionByUserId" parameterType="Integer" resultMap="roleAndPermission">
+        SELECT ur.role_id id,r.name name,r.remark remark FROM user_role ur LEFT JOIN role r ON r.id=ur.role_id
+        WHERE ur.user_id=#{user_id}
+    </select>
+    <resultMap id="roleAndPermission" type="role">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <collection property="permissionList" column="id" javaType="ArrayList"
+                    ofType="com.vms.bean.Permission"
+                    select="com.vms.dao.PermissionMapper.findByRoleId">
+            <id property="id" column="id"/>
+            <result property="name" column="name"/>
+        </collection>
+    </resultMap>
+
+    <select id="findByUserName" parameterType="String" resultType="com.vms.bean.Menu">
+        SELECT m.* FROM user u
+            LEFT JOIN user_role ur ON ur.user_id=u.id
+            LEFT JOIN role_menu rm ON rm.role_id=ur.role_id
+            LEFT JOIN menu m ON m.id=rm.menu_id
+            WHERE u.user_name=#{userName} GROUP BY id ORDER BY sort
+    </select>
+
+    <insert id="insertRole" parameterType="role" useGeneratedKeys="true" keyProperty="id"
+            keyColumn="id">
+        insert into role values(null,#{name},#{remark})
+    </insert>
+
+    <insert id="insertRoleMenu" parameterType="Integer">
+        insert into role_menu values(null,#{roleId},#{menuId})
+    </insert>
+
+    <insert id="insertUserRole" parameterType="Integer">
+        insert into user_role values(null,#{userId},#{roleId})
+    </insert>
+
+    <insert id="insertRolePermission" parameterType="Integer">
+        insert into role_permission values(null,#{roleId},#{permissionId})
+    </insert>
+
+    <update id="updateRole" parameterType="role">
+        update role set name=#{name},remark=#{remark} where id=#{id}
+    </update>
+
+    <delete id="deleteRole" parameterType="Integer">
+        delete from role where id=#{id}
+    </delete>
+
+    <delete id="deleteRoleMenu" parameterType="Integer">
+        delete from role_menu where role_id=#{roleId} and menu_id=#{menuId}
+    </delete>
+
+    <delete id="deleteRolePermission" parameterType="Integer">
+        delete from role_permission where role_id=#{roleId} and permission_id=#{permissionId}
+    </delete>
+
+
+</mapper>
