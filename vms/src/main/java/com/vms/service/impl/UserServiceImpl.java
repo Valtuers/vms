@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
         FileUtils.base64ToFile(imgFilePath, base64Data);
 
         //上传文件到fastDFS
-        String url = fastDFSClient.uploadBase64(FileUtils.fileToMultipart(imgFilePath));
+        String url = fastDFSClient.uploadBase64(FileUtils.fileToMultipart(imgFilePath),suffix);
 
         //获取缩略图的url
         String thump = "_80x80.";

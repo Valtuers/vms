@@ -44,23 +44,23 @@ public class FastDFSClient {
 		return storePath.getPath();
 	}
 	
-	public String uploadQRCode(MultipartFile file) throws IOException {
+	public String uploadQRCode(MultipartFile file,String suffix) throws IOException {
 		StorePath storePath = storageClient.uploadFile(file.getInputStream(), file.getSize(),
-				"png", null);
+				suffix, null);
 		
 		return storePath.getPath();
 	}
 	
-	public String uploadFace(MultipartFile file) throws IOException {
+	public String uploadFace(MultipartFile file,String suffix) throws IOException {
 		StorePath storePath = storageClient.uploadImageAndCrtThumbImage(file.getInputStream(), file.getSize(),
-				"png", null);
+				suffix, null);
 		
 		return storePath.getPath();
 	}
 	
-	public String uploadBase64(MultipartFile file) throws IOException {
+	public String uploadBase64(MultipartFile file,String suffix) throws IOException {
 		StorePath storePath = storageClient.uploadImageAndCrtThumbImage(file.getInputStream(), file.getSize(),
-				"png", null);
+				suffix, null);
 		
 		return storePath.getPath();
 	}
