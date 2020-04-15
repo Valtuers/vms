@@ -10,9 +10,9 @@ import axios from "axios";
 Vue.use(ElementUI);
 
 Vue.prototype.$axios = axios;
-// axios.defaults.baseURL = "http://47.113.109.9:9090";
+axios.defaults.baseURL = "http://47.113.109.9:9090";
 // axios.defaults.baseURL = "http://172.18.253.191:9090";
-axios.defaults.baseURL = "http://localhost:9090";
+// axios.defaults.baseURL = "http://localhost:9090";
 
 // http request拦截器 添加一个请求拦截器
 axios.interceptors.request.use(
